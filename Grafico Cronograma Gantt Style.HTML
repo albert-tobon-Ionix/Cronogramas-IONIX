@@ -1,471 +1,462 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2865
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma Dinámico de Proyecto</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas para la descarga de imagen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Definición de colores y tipografía */
+        .text-montserrat { font-family: 'Montserrat', 'Segoe UI', sans-serif; }
+        .bg-ionix-blue { background-color: #005B96; }
+        .text-ionix-blue { color: #005B96; }
+        .bg-ionix-light-blue { background-color: #3A8EC4; }
+        .bg-ionix-gray-mid { background-color: #6E7C8E; }
+        .bg-ionix-gray-dark { background-color: #2C3E50; }
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="es">\
-<head>\
-    <meta charset="UTF-8">\
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
-    <title>Cronograma Din\'e1mico de Proyecto</title>\
-    <!-- Tailwind CSS -->\
-    <script src="https://cdn.tailwindcss.com"></script>\
-    <!-- html2canvas para la descarga de imagen -->\
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>\
-    <style>\
-        /* Definici\'f3n de colores y tipograf\'eda */\
-        .text-montserrat \{ font-family: 'Montserrat', 'Segoe UI', sans-serif; \}\
-        .bg-ionix-blue \{ background-color: #005B96; \}\
-        .text-ionix-blue \{ color: #005B96; \}\
-        .bg-ionix-light-blue \{ background-color: #3A8EC4; \}\
-        .bg-ionix-gray-mid \{ background-color: #6E7C8E; \}\
-        .bg-ionix-gray-dark \{ background-color: #2C3E50; \}\
-\
-        /* Estilos espec\'edficos del gr\'e1fico */\
-        .gantt-chart \{\
-            /* Aumentamos el ancho de la columna de tarea para evitar el recorte en la descarga */\
-            grid-template-columns: 220px 1fr; /* Columna de Tarea (220px) y Columna del Gr\'e1fico */\
-            display: grid;\
-            row-gap: 1px;\
-            border-left: 1px solid #e0e0e0;\
-        \}\
-        .gantt-header \{\
-            display: contents;\
-            /* Tambi\'e9n ajustamos el header para que coincida con el cuerpo del grid */\
-            grid-template-columns: 220px 1fr; \
-        \}\
-\
-        .task-label, .day-marker \{\
-            padding: 8px 12px;\
-            font-size: 14px;\
-            font-weight: 500;\
-        \}\
-        \
-        /* Aseguramos que la etiqueta de la tarea tenga un padding adecuado en el lado izquierdo */\
-        .task-label \{\
-            padding-left: 16px; \
-        \}\
-\
-\
-        /* Contenedor principal de la barra Gantt */\
-        .bar-container \{\
-            position: relative;\
-            height: 30px;\
-            display: flex;\
-            align-items: center;\
-            border-bottom: 1px solid #e0e0e0;\
-        \}\
-\
-        /* Estilos de las barras */\
-        .task-bar \{\
-            height: 80%;\
-            border-radius: 4px;\
-            position: absolute; \
-            display: flex;\
-            align-items: center;\
-            justify-content: flex-end; \
-            padding-right: 4px;\
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\
-            transition: all 0.3s ease;\
-            min-width: 15px; /* M\'ednimo para ver la barra */\
-        \}\
-\
-        /* Estilo para la etiqueta de datos dentro de la barra */\
-        .data-label \{\
-            color: white;\
-            font-size: 11px;\
-            font-weight: 600;\
-            white-space: nowrap;\
-            overflow: hidden;\
-            text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);\
-            padding-left: 5px;\
-        \}\
-\
-        /* Estilos para los marcadores de d\'eda */\
-        .day-line \{\
-            position: absolute;\
-            top: 0;\
-            bottom: 0;\
-            width: 1px;\
-            background-color: #cccccc;\
-            z-index: 10;\
-        \}\
-    </style>\
-</head>\
-<body class="bg-gray-100 p-4 md:p-8 min-h-screen text-montserrat text-gray-800">\
-\
-    <div class="w-full max-w-6xl mx-auto bg-white shadow-2xl rounded-xl p-4 md:p-8 border border-gray-200">\
-        <h1 class="text-2xl md:text-3xl font-extrabold mb-4 text-ionix-blue border-b pb-2">Panel de Control y Cronograma</h1>\
-\
-        <!-- SECCI\'d3N 1: EDICI\'d3N DE T\'cdTULOS -->\
-        <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">\
-            <h2 class="text-lg font-semibold mb-3">Par\'e1metros del Proyecto</h2>\
-            <div class="space-y-3">\
-                <input type="text" id="projectTitle" value="Cronograma del Proyecto (3.1 d\'edas / 28.5 HH)" oninput="updateTitles()"\
-                       class="w-full p-2 border border-gray-300 rounded-lg focus:ring-ionix-blue focus:border-ionix-blue text-lg font-bold"\
-                       placeholder="T\'edtulo Principal">\
-                <input type="text" id="projectSubtitle" value="Eliminaci\'f3n opci\'f3n Cambiar Clave PIN" oninput="updateTitles()"\
-                       class="w-full p-2 border border-gray-300 rounded-lg focus:ring-ionix-blue focus:border-ionix-blue"\
-                       placeholder="Subt\'edtulo">\
-                <p id="totalHoursDisplay" class="text-sm text-gray-600 font-medium">Horas Totales: 28.5 hh (3.56 d\'edas)</p>\
-            </div>\
-        </div>\
-\
-        <!-- SECCI\'d3N 2: EDICI\'d3N DE TAREAS -->\
-        <div class="bg-gray-50 p-4 rounded-lg mb-4 border border-gray-200">\
-            <h2 class="text-lg font-semibold mb-3">Edici\'f3n de Tareas</h2>\
-            <table class="min-w-full divide-y divide-gray-300 text-sm">\
-                <thead>\
-                    <tr class="text-left text-gray-600">\
-                        <th class="py-2">Tarea</th>\
-                        <th class="py-2 w-32 text-center">Duraci\'f3n (hh)</th>\
-                        <th class="py-2 w-16">Acci\'f3n</th>\
-                    </tr>\
-                </thead>\
-                <tbody id="tasksTableBody" class="divide-y divide-gray-200">\
-                    <!-- Filas de tareas se inyectan aqu\'ed -->\
-                </tbody>\
-            </table>\
-            <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-300">\
-                <button onclick="addTask()" class="px-4 py-2 bg-ionix-blue text-white rounded-lg hover:bg-ionix-light-blue transition text-sm">\
-                    + Agregar Tarea\
-                </button>\
-                <div class="space-x-3">\
-                    <button onclick="downloadGanttAsJPG()" class="px-4 py-2 bg-yellow-600 text-white font-bold rounded-lg shadow-md hover:bg-yellow-700 transition text-sm">\
-                        Descargar JPG\
-                    </button>\
-                    <button onclick="generateCronograma()" class="px-6 py-2 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition text-sm">\
-                        Generar Cronograma\
-                    </button>\
-                </div>\
-            </div>\
-        </div>\
-\
-        <!-- SECCI\'d3N 3: VISUALIZACI\'d3N DEL GR\'c1FICO GANTT -->\
-        <!-- NOTA DE AJUSTE: Se usa 'p-8' para darle m\'e1s margen al gr\'e1fico completo al ser capturado. -->\
-        <div id="gantt-chart-container" class="border border-gray-300 rounded-lg p-8 bg-white">\
-            <header class="mb-6">\
-                <h1 id="chartTitle" class="text-xl md:text-2xl font-bold border-b pb-2"></h1>\
-                <p id="chartSubtitle" class="text-base text-ionix-blue font-semibold mt-2"></p>\
-            </header>\
-\
-            <!-- Eje de D\'edas/Tiempo (Encabezado) -->\
-            <div id="timeline-header" class="gantt-header grid grid-cols-[220px_1fr] text-center border-b-2 border-ionix-blue font-bold text-gray-700">\
-                <div class="task-label bg-gray-100 text-left border-r border-gray-300">Tarea</div>\
-                <div id="timelineDays" class="bar-container relative h-10 flex items-center justify-between px-2 bg-gray-100">\
-                    <!-- Marcadores de d\'edas se inyectan aqu\'ed -->\
-                </div>\
-            </div>\
-\
-            <!-- Cuerpo del Gr\'e1fico Gantt -->\
-            <div id="gantt-body" class="gantt-chart">\
-                <!-- Barras del gr\'e1fico se inyectan aqu\'ed -->\
-            </div>\
-            \
-            <!-- L\'ednea GO LIVE -->\
-            <!-- Se ajusta el ml-[220px] para que coincida con el ancho de la tarea -->\
-            <div class="relative w-full max-w-[calc(100%-220px)] ml-[220px] mt-2 h-0">\
-                <div id="goLiveLine" class="absolute top-[-2px] bottom-[-2px] w-0.5 bg-gray-500 rounded-full" style="left: 100%;">\
-                    <span class="absolute top-[-10px] left-1/2 transform -translate-x-1/2 text-xs font-bold text-ionix-blue px-2 py-1 rounded-sm bg-white border border-ionix-blue whitespace-nowrap shadow-md">GO LIVE</span>\
-                </div>\
-            </div>\
-        </div>\
-    </div>\
-\
-    <script>\
-        // --- ESTADO INICIAL ---\
-        let projectTitle = document.getElementById('projectTitle').value;\
-        let projectSubtitle = document.getElementById('projectSubtitle').value;\
-        \
-        // Colores predefinidos de Ionix\
-        const taskColors = [\
-            "bg-ionix-blue",\
-            "bg-ionix-light-blue",\
-            "bg-ionix-gray-mid",\
-            "bg-ionix-gray-dark",\
-            "bg-green-600",\
-            "bg-purple-600",\
-        ];\
-\
-        // Datos del proyecto iniciales\
-        let tasks = [\
-            \{ name: "An\'e1lisis y Dise\'f1o", duration: 2.0, color: taskColors[0] \},\
-            \{ name: "Desarrollo", duration: 16.0, color: taskColors[1] \},\
-            \{ name: "Pruebas QA", duration: 6.4, color: taskColors[2] \},\
-            \{ name: "PDR, Documentaci\'f3n y Entrega", duration: 4.1, color: taskColors[3] \}\
-        ];\
-\
-        // --- FUNCIONES DE L\'d3GICA ---\
-\
-        function calculateTotalHours() \{\
-            return tasks.reduce((sum, task) => sum + parseFloat(task.duration || 0), 0);\
-        \}\
-\
-        function updateTotalDisplay() \{\
-            const totalHours = calculateTotalHours();\
-            const totalDays = totalHours / 8;\
-            \
-            document.getElementById('totalHoursDisplay').textContent = \
-                `Horas Totales: $\{totalHours.toFixed(1)\} hh ($\{totalDays.toFixed(2)\} d\'edas)`;\
-\
-            // Actualizar los t\'edtulos de la vista previa inmediatamente (incluso si el gr\'e1fico no se renderiza)\
-            document.getElementById('chartTitle').textContent = projectTitle;\
-            document.getElementById('chartSubtitle').textContent = projectSubtitle;\
-        \}\
-\
-        function updateTitles() \{\
-            projectTitle = document.getElementById('projectTitle').value;\
-            projectSubtitle = document.getElementById('projectSubtitle').value;\
-            updateTotalDisplay(); // Actualiza los t\'edtulos en la vista previa y el display de horas.\
-        \}\
-\
-        function handleTaskChange(index, field, value) \{\
-            if (field === 'duration') \{\
-                tasks[index][field] = parseFloat(value) || 0;\
-            \} else \{\
-                tasks[index][field] = value;\
-            \}\
-            // Solo actualiza los controles y el total, no el gr\'e1fico.\
-            renderTaskControls(); \
-            updateTotalDisplay();\
-        \}\
-\
-        function addTask() \{\
-            const nextColorIndex = tasks.length % taskColors.length;\
-            tasks.push(\{ \
-                name: "Nueva Tarea", \
-                duration: 4.0, \
-                color: taskColors[nextColorIndex] \
-            \});\
-            renderTaskControls();\
-            updateTotalDisplay();\
-        \}\
-\
-        function removeTask(index) \{\
-            tasks.splice(index, 1);\
-            renderTaskControls();\
-            updateTotalDisplay();\
-        \}\
-\
-        // --- RENDERIZADO DE CONTROLES ---\
-        function renderTaskControls() \{\
-            const tbody = document.getElementById('tasksTableBody');\
-            tbody.innerHTML = '';\
-            \
-            tasks.forEach((task, index) => \{\
-                const tr = document.createElement('tr');\
-                tr.className = 'hover:bg-gray-100';\
-                \
-                // Funci\'f3n para obtener el color de fondo para el input de tarea\
-                const getTaskInputStyle = (colorClass) => \{\
-                    const colorMap = \{\
-                        "bg-ionix-blue": "005B96",\
-                        "bg-ionix-light-blue": "3A8EC4",\
-                        "bg-ionix-gray-mid": "6E7C8E",\
-                        "bg-ionix-gray-dark": "2C3E50",\
-                        "bg-green-600": "22c55e",\
-                        "bg-purple-600": "9333ea"\
-                    \};\
-                    const hexColor = colorMap[colorClass] || '000000'; // Fallback\
-                    return `background-color: #$\{hexColor\}; color: white; font-weight: 600;`;\
-                \};\
-\
-                tr.innerHTML = `\
-                    <td class="py-2 pr-2">\
-                        <input type="text" value="$\{task.name\}" oninput="handleTaskChange($\{index\}, 'name', this.value)"\
-                               class="w-full p-1 border border-gray-300 rounded-md text-sm focus:ring-ionix-blue focus:border-ionix-blue"\
-                               style="$\{getTaskInputStyle(task.color)\}"\
-                               autocomplete="off"\
-                        >\
-                    </td>\
-                    <td class="py-2">\
-                        <input type="number" step="0.1" min="0" value="$\{task.duration\}" oninput="handleTaskChange($\{index\}, 'duration', this.value)"\
-                               class="w-full p-1 border border-gray-300 rounded-md text-center text-sm focus:ring-ionix-blue focus:border-ionix-blue"\
-                               autocomplete="off"\
-                        >\
-                    </td>\
-                    <td class="py-2 text-center">\
-                        <button onclick="removeTask($\{index\})" class="text-red-500 hover:text-red-700 text-lg font-bold p-1 leading-none transition">\
-                            &times;\
-                        </button>\
-                    </td>\
-                `;\
-                tbody.appendChild(tr);\
-            \});\
-        \}\
-\
-        // --- FUNCI\'d3N DE DESCARGA DE IMAGEN ---\
-        function downloadGanttAsJPG() \{\
-            const container = document.getElementById('gantt-chart-container');\
-            \
-            // Oculta temporalmente la l\'ednea GO LIVE para evitar artifacts en el borde si es necesario\
-            const goLiveLine = document.getElementById('goLiveLine');\
-            goLiveLine.style.visibility = 'hidden'; \
-            \
-            // Se puede mostrar un indicador de carga aqu\'ed, si fuera necesario\
-\
-            html2canvas(container, \{\
-                scale: 2, // Aumenta la escala para una mejor resoluci\'f3n (2x)\
-                logging: false,\
-                useCORS: true,\
-                backgroundColor: '#ffffff', // Asegura un fondo blanco\
-            \}).then(canvas => \{\
-                // Convierte el canvas a Data URL en formato JPEG con calidad 0.9\
-                const imgData = canvas.toDataURL('image/jpeg', 0.9); \
-\
-                // Crea un elemento de enlace temporal para forzar la descarga\
-                const link = document.createElement('a');\
-                link.href = imgData;\
-                link.download = 'cronograma_proyecto.jpg';\
-                \
-                // Simula el click para iniciar la descarga\
-                document.body.appendChild(link);\
-                link.click();\
-                document.body.removeChild(link);\
-\
-                // Restaura la visibilidad de la l\'ednea GO LIVE\
-                goLiveLine.style.visibility = 'visible'; \
-            \}).catch(error => \{\
-                console.error("Error al generar la imagen:", error);\
-                // Asegura restaurar la visibilidad en caso de error\
-                goLiveLine.style.visibility = 'visible';\
-            \});\
-        \}\
-\
-        // --- FUNCI\'d3N PRINCIPAL DE GENERACI\'d3N DEL CRONOGRAMA ---\
-        function generateCronograma() \{\
-            renderGantt(); // Ejecuta la funci\'f3n de renderizado del gr\'e1fico\
-        \}\
-        \
-        // --- RENDERIZADO DEL GR\'c1FICO GANTT ---\
-        function renderGantt() \{\
-            const ganttBody = document.getElementById('gantt-body');\
-            const timelineDays = document.getElementById('timelineDays');\
-            const goLiveLine = document.getElementById('goLiveLine');\
-\
-            // Limpiar contenedores\
-            ganttBody.innerHTML = '';\
-            timelineDays.innerHTML = '';\
-\
-            const totalHours = calculateTotalHours();\
-            const totalDays = totalHours / 8; // 8 horas por d\'eda laboral\
-            \
-            if (totalHours === 0) \{\
-                ganttBody.innerHTML = '<div class="col-span-2 text-center py-8 text-gray-500">Agrega tareas con una duraci\'f3n mayor a cero y presiona "Generar Cronograma".</div>';\
-                goLiveLine.style.left = `0%`;\
-                return;\
-            \}\
-\
-            let cumulativeHours = 0;\
-\
-            // 1. Renderizar Barras del Gr\'e1fico\
-            tasks.forEach((task) => \{\
-                const startPercent = (cumulativeHours / totalHours) * 100;\
-                const durationPercent = (task.duration / totalHours) * 100;\
-\
-                // A. Etiqueta de la Tarea\
-                const taskLabelDiv = document.createElement('div');\
-                taskLabelDiv.className = 'task-label bg-gray-100 border-r border-gray-300 whitespace-nowrap overflow-hidden text-ellipsis';\
-                taskLabelDiv.textContent = task.name;\
-                ganttBody.appendChild(taskLabelDiv);\
-\
-                // B. Contenedor de la Barra (Contenedor para posicionar la barra absolutamente)\
-                const barContainerDiv = document.createElement('div');\
-                barContainerDiv.className = 'bar-container relative'; // Aseguramos que sea relative para el posicionamiento interno\
-\
-                // C. Barra de la Tarea (Estilo Gantt)\
-                const taskBarDiv = document.createElement('div');\
-                taskBarDiv.className = `task-bar $\{task.color\}`;\
-                taskBarDiv.style.left = `$\{startPercent\}%`; // Posicionamiento de inicio\
-                taskBarDiv.style.width = `$\{durationPercent\}%`;\
-\
-                // D. Etiqueta de Datos\
-                const dataLabelSpan = document.createElement('span');\
-                dataLabelSpan.className = 'data-label';\
-                dataLabelSpan.textContent = `$\{task.duration\} hh`;\
-\
-                taskBarDiv.appendChild(dataLabelSpan);\
-                barContainerDiv.appendChild(taskBarDiv);\
-                ganttBody.appendChild(barContainerDiv);\
-                \
-                cumulativeHours += task.duration;\
-            \});\
-            \
-            // 2. Renderizar Marcadores de D\'edas\
-            const dayMarkers = [];\
-            for (let day = 1; day <= Math.ceil(totalDays); day++) \{\
-                const dayHour = day * 8;\
-                const percent = Math.min((dayHour / totalHours) * 100, 100);\
-\
-                if (dayHour <= totalHours + 8) \{ \
-                    dayMarkers.push(\{ \
-                        percent: percent, \
-                        label: `D\'eda $\{day\}`\
-                    \});\
-                \}\
-            \}\
-\
-            // Renderizado de las etiquetas de d\'edas en la cabecera\
-            let prevPercent = 0;\
-            // Quitamos el ajuste de gridTemplateColumns ya que el grid ya est\'e1 definido en el CSS\
-            \
-            dayMarkers.forEach((marker, index) => \{\
-                const span = document.createElement('span');\
-                span.className = 'absolute text-xs md:text-sm font-normal';\
-                \
-                // Calculamos la posici\'f3n del texto del d\'eda\
-                const currentPercent = marker.percent;\
-                const startPercent = index === 0 ? 0 : dayMarkers[index-1].percent;\
-                const midpoint = startPercent + (currentPercent - startPercent) / 2;\
-                \
-                span.style.left = `$\{midpoint\}%`;\
-                span.style.transform = 'translateX(-50%)';\
-                span.textContent = `D\'eda $\{index + 1\}`;\
-\
-                if (marker.percent > 0) \{\
-                    timelineDays.appendChild(span);\
-                \}\
-\
-                prevPercent = marker.percent;\
-\
-                // L\'ednea Divisoria Vertical\
-                const line = document.createElement('div');\
-                line.className = 'day-line';\
-                line.style.left = `$\{marker.percent\}%`;\
-                timelineDays.appendChild(line);\
-\
-                // L\'edneas Divisorias en las Filas del Cuerpo\
-                for (let i = 0; i < tasks.length; i++) \{\
-                    // Hay 2 elementos por tarea: label y bar-container\
-                    const rowBarContainer = ganttBody.children[i * 2 + 1]; \
-                    if (rowBarContainer) \{\
-                        const rowLine = document.createElement('div');\
-                        rowLine.className = 'day-line';\
-                        rowLine.style.left = `$\{marker.percent\}%`;\
-                        rowLine.style.backgroundColor = '#f0f0f0'; \
-                        rowLine.style.zIndex = '5';\
-                        rowBarContainer.appendChild(rowLine);\
-                    \}\
-                \}\
-            \});\
-\
-            // 3. Posicionar la L\'ednea GO LIVE\
-            goLiveLine.style.left = `100%`;\
-        \}\
-\
-        // --- INICIALIZACI\'d3N ---\
-        document.addEventListener('DOMContentLoaded', () => \{\
-            // Setup inicial de los controles y totales\
-            renderTaskControls();\
-            updateTotalDisplay();\
-            // Generaci\'f3n inicial del gr\'e1fico al cargar la p\'e1gina\
-            generateCronograma();\
-        \});\
-    </script>\
-\
-</body>\
-</html>\
-}
+        /* Estilos específicos del gráfico */
+        .gantt-chart {
+            /* Aumentamos el ancho de la columna de tarea para evitar el recorte en la descarga */
+            grid-template-columns: 220px 1fr; /* Columna de Tarea (220px) y Columna del Gráfico */
+            display: grid;
+            row-gap: 1px;
+            border-left: 1px solid #e0e0e0;
+        }
+        .gantt-header {
+            display: contents;
+            /* También ajustamos el header para que coincida con el cuerpo del grid */
+            grid-template-columns: 220px 1fr; 
+        }
+
+        .task-label, .day-marker {
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Aseguramos que la etiqueta de la tarea tenga un padding adecuado en el lado izquierdo */
+        .task-label {
+            padding-left: 16px; 
+        }
+
+
+        /* Contenedor principal de la barra Gantt */
+        .bar-container {
+            position: relative;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        /* Estilos de las barras */
+        .task-bar {
+            height: 80%;
+            border-radius: 4px;
+            position: absolute; 
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; 
+            padding-right: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            min-width: 15px; /* Mínimo para ver la barra */
+        }
+
+        /* Estilo para la etiqueta de datos dentro de la barra */
+        .data-label {
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+            padding-left: 5px;
+        }
+
+        /* Estilos para los marcadores de día */
+        .day-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: #cccccc;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 md:p-8 min-h-screen text-montserrat text-gray-800">
+
+    <div class="w-full max-w-6xl mx-auto bg-white shadow-2xl rounded-xl p-4 md:p-8 border border-gray-200">
+        <h1 class="text-2xl md:text-3xl font-extrabold mb-4 text-ionix-blue border-b pb-2">Panel de Control y Cronograma</h1>
+
+        <!-- SECCIÓN 1: EDICIÓN DE TÍTULOS -->
+        <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
+            <h2 class="text-lg font-semibold mb-3">Parámetros del Proyecto</h2>
+            <div class="space-y-3">
+                <input type="text" id="projectTitle" value="Cronograma del Proyecto (3.1 días / 28.5 HH)" oninput="updateTitles()"
+                       class="w-full p-2 border border-gray-300 rounded-lg focus:ring-ionix-blue focus:border-ionix-blue text-lg font-bold"
+                       placeholder="Título Principal">
+                <input type="text" id="projectSubtitle" value="Eliminación opción Cambiar Clave PIN" oninput="updateTitles()"
+                       class="w-full p-2 border border-gray-300 rounded-lg focus:ring-ionix-blue focus:border-ionix-blue"
+                       placeholder="Subtítulo">
+                <p id="totalHoursDisplay" class="text-sm text-gray-600 font-medium">Horas Totales: 28.5 hh (3.56 días)</p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: EDICIÓN DE TAREAS -->
+        <div class="bg-gray-50 p-4 rounded-lg mb-4 border border-gray-200">
+            <h2 class="text-lg font-semibold mb-3">Edición de Tareas</h2>
+            <table class="min-w-full divide-y divide-gray-300 text-sm">
+                <thead>
+                    <tr class="text-left text-gray-600">
+                        <th class="py-2">Tarea</th>
+                        <th class="py-2 w-32 text-center">Duración (hh)</th>
+                        <th class="py-2 w-16">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tasksTableBody" class="divide-y divide-gray-200">
+                    <!-- Filas de tareas se inyectan aquí -->
+                </tbody>
+            </table>
+            <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-300">
+                <button onclick="addTask()" class="px-4 py-2 bg-ionix-blue text-white rounded-lg hover:bg-ionix-light-blue transition text-sm">
+                    + Agregar Tarea
+                </button>
+                <div class="space-x-3">
+                    <button onclick="downloadGanttAsJPG()" class="px-4 py-2 bg-yellow-600 text-white font-bold rounded-lg shadow-md hover:bg-yellow-700 transition text-sm">
+                        Descargar JPG
+                    </button>
+                    <button onclick="generateCronograma()" class="px-6 py-2 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition text-sm">
+                        Generar Cronograma
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: VISUALIZACIÓN DEL GRÁFICO GANTT -->
+        <!-- NOTA DE AJUSTE: Se usa 'p-8' para darle más margen al gráfico completo al ser capturado. -->
+        <div id="gantt-chart-container" class="border border-gray-300 rounded-lg p-8 bg-white">
+            <header class="mb-6">
+                <h1 id="chartTitle" class="text-xl md:text-2xl font-bold border-b pb-2"></h1>
+                <p id="chartSubtitle" class="text-base text-ionix-blue font-semibold mt-2"></p>
+            </header>
+
+            <!-- Eje de Días/Tiempo (Encabezado) -->
+            <div id="timeline-header" class="gantt-header grid grid-cols-[220px_1fr] text-center border-b-2 border-ionix-blue font-bold text-gray-700">
+                <div class="task-label bg-gray-100 text-left border-r border-gray-300">Tarea</div>
+                <div id="timelineDays" class="bar-container relative h-10 flex items-center justify-between px-2 bg-gray-100">
+                    <!-- Marcadores de días se inyectan aquí -->
+                </div>
+            </div>
+
+            <!-- Cuerpo del Gráfico Gantt -->
+            <div id="gantt-body" class="gantt-chart">
+                <!-- Barras del gráfico se inyectan aquí -->
+            </div>
+            
+            <!-- Línea GO LIVE -->
+            <!-- Se ajusta el ml-[220px] para que coincida con el ancho de la tarea -->
+            <div class="relative w-full max-w-[calc(100%-220px)] ml-[220px] mt-2 h-0">
+                <div id="goLiveLine" class="absolute top-[-2px] bottom-[-2px] w-0.5 bg-gray-500 rounded-full" style="left: 100%;">
+                    <span class="absolute top-[-10px] left-1/2 transform -translate-x-1/2 text-xs font-bold text-ionix-blue px-2 py-1 rounded-sm bg-white border border-ionix-blue whitespace-nowrap shadow-md">GO LIVE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ESTADO INICIAL ---
+        let projectTitle = document.getElementById('projectTitle').value;
+        let projectSubtitle = document.getElementById('projectSubtitle').value;
+        
+        // Colores predefinidos de Ionix
+        const taskColors = [
+            "bg-ionix-blue",
+            "bg-ionix-light-blue",
+            "bg-ionix-gray-mid",
+            "bg-ionix-gray-dark",
+            "bg-green-600",
+            "bg-purple-600",
+        ];
+
+        // Datos del proyecto iniciales
+        let tasks = [
+            { name: "Análisis y Diseño", duration: 2.0, color: taskColors[0] },
+            { name: "Desarrollo", duration: 16.0, color: taskColors[1] },
+            { name: "Pruebas QA", duration: 6.4, color: taskColors[2] },
+            { name: "PDR, Documentación y Entrega", duration: 4.1, color: taskColors[3] }
+        ];
+
+        // --- FUNCIONES DE LÓGICA ---
+
+        function calculateTotalHours() {
+            return tasks.reduce((sum, task) => sum + parseFloat(task.duration || 0), 0);
+        }
+
+        function updateTotalDisplay() {
+            const totalHours = calculateTotalHours();
+            const totalDays = totalHours / 8; // 8 horas por día laboral
+            
+            // Actualiza la visualización de horas totales en el panel de control
+            document.getElementById('totalHoursDisplay').textContent = 
+                `Horas Totales: ${totalHours.toFixed(1)} hh (${totalDays.toFixed(2)} días)`;
+
+            // Actualizar los títulos de la vista previa inmediatamente (incluso si el gráfico no se renderiza)
+            document.getElementById('chartTitle').textContent = projectTitle;
+            document.getElementById('chartSubtitle').textContent = projectSubtitle;
+        }
+
+        function updateTitles() {
+            projectTitle = document.getElementById('projectTitle').value;
+            projectSubtitle = document.getElementById('projectSubtitle').value;
+            updateTotalDisplay(); // Actualiza los títulos en la vista previa y el display de horas.
+        }
+
+        function handleTaskChange(index, field, value) {
+            if (field === 'duration') {
+                // Asegurarse de que la duración sea un número
+                tasks[index][field] = parseFloat(value) || 0;
+            } else {
+                tasks[index][field] = value;
+            }
+            // Solo actualiza los controles y el total. El gráfico se actualiza con el botón "Generar".
+            renderTaskControls(); 
+            updateTotalDisplay();
+        }
+
+        function addTask() {
+            const nextColorIndex = tasks.length % taskColors.length;
+            tasks.push({ 
+                name: "Nueva Tarea", 
+                duration: 4.0, 
+                color: taskColors[nextColorIndex] 
+            });
+            renderTaskControls();
+            updateTotalDisplay();
+        }
+
+        function removeTask(index) {
+            tasks.splice(index, 1);
+            renderTaskControls();
+            updateTotalDisplay();
+        }
+
+        // --- RENDERIZADO DE CONTROLES ---
+        function renderTaskControls() {
+            const tbody = document.getElementById('tasksTableBody');
+            tbody.innerHTML = '';
+            
+            tasks.forEach((task, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-100';
+                
+                // Función auxiliar para mapear clases de Tailwind a colores HEX para el estilo del input
+                const getTaskInputStyle = (colorClass) => {
+                    const colorMap = {
+                        "bg-ionix-blue": "005B96",
+                        "bg-ionix-light-blue": "3A8EC4",
+                        "bg-ionix-gray-mid": "6E7C8E",
+                        "bg-ionix-gray-dark": "2C3E50",
+                        "bg-green-600": "22c55e",
+                        "bg-purple-600": "9333ea"
+                    };
+                    const hexColor = colorMap[colorClass] || '000000'; // Fallback
+                    return `background-color: #${hexColor}; color: white; font-weight: 600;`;
+                };
+
+                tr.innerHTML = `
+                    <td class="py-2 pr-2">
+                        <input type="text" value="${task.name}" oninput="handleTaskChange(${index}, 'name', this.value)"
+                               class="w-full p-1 border border-gray-300 rounded-md text-sm focus:ring-ionix-blue focus:border-ionix-blue"
+                               style="${getTaskInputStyle(task.color)}"
+                               autocomplete="off"
+                        >
+                    </td>
+                    <td class="py-2">
+                        <input type="number" step="0.1" min="0" value="${task.duration}" oninput="handleTaskChange(${index}, 'duration', this.value)"
+                               class="w-full p-1 border border-gray-300 rounded-md text-center text-sm focus:ring-ionix-blue focus:border-ionix-blue"
+                               autocomplete="off"
+                        >
+                    </td>
+                    <td class="py-2 text-center">
+                        <button onclick="removeTask(${index})" class="text-red-500 hover:text-red-700 text-lg font-bold p-1 leading-none transition">
+                            &times;
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- FUNCIÓN DE DESCARGA DE IMAGEN ---
+        function downloadGanttAsJPG() {
+            const container = document.getElementById('gantt-chart-container');
+            
+            // Oculta temporalmente la línea GO LIVE para evitar artifacts en el borde si es necesario
+            const goLiveLine = document.getElementById('goLiveLine');
+            // Usamos style.display para ocultar el elemento por completo sin dejar espacio.
+            const goLiveDisplay = goLiveLine.style.display;
+            goLiveLine.style.display = 'none'; 
+            
+            // html2canvas genera un canvas a partir del elemento DOM.
+            html2canvas(container, {
+                scale: 2, // Aumenta la escala para una mejor resolución (2x)
+                logging: false,
+                useCORS: true,
+                backgroundColor: '#ffffff', // Asegura un fondo blanco
+            }).then(canvas => {
+                // Convierte el canvas a Data URL en formato JPEG con calidad 0.9
+                const imgData = canvas.toDataURL('image/jpeg', 0.9); 
+
+                // Crea un elemento de enlace temporal para forzar la descarga
+                const link = document.createElement('a');
+                link.href = imgData;
+                link.download = 'cronograma_proyecto.jpg';
+                
+                // Simula el click para iniciar la descarga
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Restaura la visibilidad de la línea GO LIVE
+                goLiveLine.style.display = goLiveDisplay; 
+            }).catch(error => {
+                console.error("Error al generar la imagen:", error);
+                // Asegura restaurar la visibilidad en caso de error
+                goLiveLine.style.display = goLiveDisplay;
+            });
+        }
+
+        // --- FUNCIÓN PRINCIPAL DE GENERACIÓN DEL CRONOGRAMA ---
+        function generateCronograma() {
+            renderGantt(); // Ejecuta la función de renderizado del gráfico
+        }
+        
+        // --- RENDERIZADO DEL GRÁFICO GANTT ---
+        function renderGantt() {
+            const ganttBody = document.getElementById('gantt-body');
+            const timelineDays = document.getElementById('timelineDays');
+            const goLiveLine = document.getElementById('goLiveLine');
+
+            // Limpiar contenedores
+            ganttBody.innerHTML = '';
+            timelineDays.innerHTML = '';
+
+            const totalHours = calculateTotalHours();
+            const totalDays = totalHours / 8; // 8 horas por día laboral
+            
+            if (totalHours === 0) {
+                ganttBody.innerHTML = '<div class="col-span-2 text-center py-8 text-gray-500">Agrega tareas con una duración mayor a cero y presiona "Generar Cronograma".</div>';
+                goLiveLine.style.left = `0%`;
+                return;
+            }
+
+            let cumulativeHours = 0;
+
+            // 1. Renderizar Barras del Gráfico
+            tasks.forEach((task) => {
+                const startPercent = (cumulativeHours / totalHours) * 100;
+                const durationPercent = (task.duration / totalHours) * 100;
+
+                // A. Etiqueta de la Tarea
+                const taskLabelDiv = document.createElement('div');
+                taskLabelDiv.className = 'task-label bg-gray-100 border-r border-gray-300 whitespace-nowrap overflow-hidden text-ellipsis';
+                taskLabelDiv.textContent = task.name;
+                ganttBody.appendChild(taskLabelDiv);
+
+                // B. Contenedor de la Barra (Contenedor para posicionar la barra absolutamente)
+                const barContainerDiv = document.createElement('div');
+                barContainerDiv.className = 'bar-container relative'; // Aseguramos que sea relative para el posicionamiento interno
+
+                // C. Barra de la Tarea (Estilo Gantt)
+                const taskBarDiv = document.createElement('div');
+                taskBarDiv.className = `task-bar ${task.color}`;
+                taskBarDiv.style.left = `${startPercent}%`; // Posicionamiento de inicio
+                taskBarDiv.style.width = `${durationPercent}%`;
+
+                // D. Etiqueta de Datos
+                const dataLabelSpan = document.createElement('span');
+                dataLabelSpan.className = 'data-label';
+                dataLabelSpan.textContent = `${task.duration} hh`;
+
+                taskBarDiv.appendChild(dataLabelSpan);
+                barContainerDiv.appendChild(taskBarDiv);
+                ganttBody.appendChild(barContainerDiv);
+                
+                cumulativeHours += task.duration;
+            });
+            
+            // 2. Renderizar Marcadores de Días
+            const dayMarkers = [];
+            for (let day = 1; day <= Math.ceil(totalDays); day++) {
+                const dayHour = day * 8;
+                const percent = Math.min((dayHour / totalHours) * 100, 100);
+
+                // Solo agregamos marcadores que están dentro o justo al final del total de horas
+                if (dayHour <= totalHours + 8) { 
+                    dayMarkers.push({ 
+                        percent: percent, 
+                        label: `Día ${day}`
+                    });
+                }
+            }
+
+            // Renderizado de las etiquetas de días en la cabecera
+            dayMarkers.forEach((marker, index) => {
+                const span = document.createElement('span');
+                span.className = 'absolute text-xs md:text-sm font-normal';
+                
+                // Calculamos la posición central del texto del día (entre la línea anterior y la actual)
+                const currentPercent = marker.percent;
+                const startPercent = index === 0 ? 0 : dayMarkers[index-1].percent;
+                const midpoint = startPercent + (currentPercent - startPercent) / 2;
+                
+                span.style.left = `${midpoint}%`;
+                span.style.transform = 'translateX(-50%)';
+                span.textContent = `Día ${index + 1}`;
+
+                if (marker.percent > 0) {
+                    timelineDays.appendChild(span);
+                }
+
+                // Línea Divisoria Vertical
+                const line = document.createElement('div');
+                line.className = 'day-line';
+                line.style.left = `${marker.percent}%`;
+                timelineDays.appendChild(line);
+
+                // Líneas Divisorias en las Filas del Cuerpo
+                for (let i = 0; i < tasks.length; i++) {
+                    // Hay 2 elementos por tarea: label y bar-container
+                    const rowBarContainer = ganttBody.children[i * 2 + 1]; 
+                    if (rowBarContainer) {
+                        const rowLine = document.createElement('div');
+                        rowLine.className = 'day-line';
+                        rowLine.style.left = `${marker.percent}%`;
+                        rowLine.style.backgroundColor = '#f0f0f0'; 
+                        rowLine.style.zIndex = '5';
+                        rowBarContainer.appendChild(rowLine);
+                    }
+                }
+            });
+
+            // 3. Posicionar la Línea GO LIVE
+            goLiveLine.style.left = `100%`;
+        }
+
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup inicial de los controles y totales
+            renderTaskControls();
+            updateTotalDisplay();
+            // Generación inicial del gráfico al cargar la página
+            generateCronograma();
+        });
+    </script>
+
+</body>
+</html>
